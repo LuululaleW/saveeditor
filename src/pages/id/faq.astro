@@ -1,0 +1,120 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import FaqIcon from '../../components/FaqIcon.astro';
+
+const faqCategories = [
+  {
+    title: 'Pengenalan Ekosistem',
+    icon: 'rocket',
+    questions: [
+      {
+        question: 'Apa itu SaveEditor.Online?',
+        answer:
+          "SaveEditor.Online adalah alat web canggih yang memungkinkan Anda mengedit file simpanan (save file) game langsung di browser Anda secara gratis. Karena aplikasi ini berjalan sepenuhnya di sisi klien, file simpanan Anda tidak pernah diunggah ke server kami. Kami mendukung berbagai engine game populer seperti RPG Maker, Ren'Py, Unity, dan Unreal Engine.",
+      },
+      {
+        question: 'Apakah aman menggunakan layanan ini?',
+        answer:
+          'Ya, sangat aman. Semua pemrosesan dilakukan secara lokal di perangkat Anda menggunakan JavaScript. File Anda tidak pernah meninggalkan komputer atau ponsel Anda. Kami hanya menggunakan Google Analytics dan AdSense untuk memantau performa situs dan menjaga keberlangsungan layanan gratis ini.',
+      },
+      {
+        question: 'Apakah saya perlu membuat akun?',
+        answer:
+          'Tidak perlu. Kami tidak meminta pendaftaran atau informasi pribadi apa pun untuk menggunakan editor ini. Cukup masukkan file Anda dan mulai mengedit.',
+      },
+      {
+        question: 'Apakah ini benar-benar gratis?',
+        answer:
+          'Ya, 100% gratis tanpa biaya tersembunyi, tanpa batas waktu penggunaan, dan tanpa fitur premium yang dikunci. Kami mendukung situs ini melalui donasi sukarela dan iklan yang tidak mengganggu.',
+      },
+    ],
+  },
+  {
+    title: 'Kompatibilitas Game dan Engine',
+    icon: 'game',
+    questions: [
+      {
+        question: 'Game apa saja yang didukung?',
+        answer:
+          "Kami mendukung ribuan game yang dibangun di atas engine populer seperti Stardew Valley, Undertale, Hollow Knight, Doki Doki Literature Club, Celeste, dan banyak lagi yang berbasis RPG Maker, Unity, Ren'Py, dan Unreal Engine.",
+      },
+      {
+        question: 'Format file apa saja yang bisa dibaca?',
+        answer:
+          "Kami mendukung .rpgsave, .rmmzsave, .save, PlayerPrefs (XML/Plist), .json, .ini, .sav (Unreal GVAS standar), .nson, dan banyak lagi.",
+      },
+      {
+        question: 'Bisakah saya mengedit simpanan dari konsol (Switch, PS, Xbox)?',
+        answer:
+          'Umumnya tidak. File simpanan konsol biasanya dienkripsi secara ketat oleh produsen perangkat keras. Namun, untuk beberapa game seperti Stardew Valley, Anda mungkin bisa memindahkan file simpanan ke PC terlebih dahulu untuk diedit.',
+      },
+      {
+        question: 'Game saya tidak ada di daftar, apakah masih bisa diedit?',
+        answer:
+          'Cobalah unggah file tersebut ke editor kami. Jika game Anda menggunakan format standar seperti JSON atau XML tanpa enkripsi tambahan, sistem deteksi otomatis kami mungkin tetap bisa membacanya.',
+      },
+    ],
+  },
+];
+
+const allQuestions = faqCategories.flatMap((cat) => cat.questions);
+---
+
+<BaseLayout
+  lang="id"
+  title="Tanya Jawab (FAQ) - SaveEditor.Online"
+  description="Temukan jawaban atas pertanyaan umum tentang pengeditan save file game di SaveEditor.Online."
+  keywords="FAQ editor save game, cara edit save game online, lokasi save file game"
+>
+  <section class="bg-gradient-to-br from-slate-900 via-primary-900 to-slate-900 text-white py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
+        Pertanyaan yang <span
+          class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-400"
+          >Sering Diajukan (FAQ)</span
+        >
+      </h1>
+      <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+        Temukan solusi dan informasi mengenai penggunaan SaveEditor.Online di sini.
+      </p>
+    </div>
+  </section>
+
+  <section class="container mx-auto px-4 py-16">
+    <div class="max-w-4xl mx-auto">
+      {
+        faqCategories.map((category, catIndex) => (
+          <section id={`section-${catIndex}`} class="mb-12">
+            <h2 class="flex items-center gap-3 text-2xl font-bold text-gray-900 mb-6">
+              <FaqIcon name={category.icon} class="w-8 h-8 text-primary-500" />
+              {category.title}
+            </h2>
+            <div class="space-y-4">
+              {category.questions.map((faq) => (
+                <details class="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                  <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50">
+                    {faq.question}
+                    <svg
+                      class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform flex-shrink-0 ml-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </summary>
+                  <div class="px-6 pb-6 text-gray-600 leading-relaxed">{faq.answer}</div>
+                </details>
+              ))}
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </section>
+</BaseLayout>

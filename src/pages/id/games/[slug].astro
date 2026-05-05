@@ -1,0 +1,721 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const games = [
+    {
+      slug: 'stardew-valley',
+      name: 'Stardew Valley',
+      seoDescription:
+        'Editor simpanan terbaik untuk Stardew Valley online dan gratis (Tanpa unduhan). Edit simpanan .xml, emas, inventaris, dan keahlian secara instan. Pemrosesan lokal dan aman.',
+      seoContent: `
+        <h2>Mengapa menggunakan Editor Stardew Valley?</h2>
+        <p>Alat otomatis ini menyederhanakan pengeditan dengan menganalisis struktur XML yang kompleks dari file simpanan Stardew Valley. Berbeda dengan pengeditan teks manual yang berisiko merusak file, editor kami memvalidasi integritas data sebelum menyimpan, memastikan peternakan Anda tetap aman.</p>
+        <h3>Fitur Utama</h3>
+        <ul>
+            <li><strong>Edit Sumber Daya Instan:</strong> Tambahkan Emas tidak terbatas, Qi Gems, dan Koin Kasino secara instan.</li>
+            <li><strong>Manajemen Inventaris:</strong> Tambahkan item apa pun (Prismatic Shard, Galaxy Sword) langsung ke ransel atau peti Anda.</li>
+            <li><strong>Maksimalkan Keahlian:</strong> Naikkan Pertanian, Pertambangan, Pencarian Makan, Memancing, dan Pertarungan ke Level 10 segera.</li>
+            <li><strong>Modifikasi Hubungan:</strong> Maksimalkan hati dengan penduduk desa atau bujangan/gadis mana pun.</li>
+        </ul>
+        <h3>Pemrosesan Lokal dan Aman</h3>
+        <p>Data Anda diproses sepenuhnya di browser Anda menggunakan JavaScript. <strong>Tidak ada data yang diunggah ke server jarak jauh</strong>, menjamin privasi dan keamanan total untuk data Anda.</p>
+        <h3>Platform yang Didukung</h3>
+        <p>Sepenuhnya kompatibel dengan file simpanan PC (Steam/GOG), Mac, Linux, dan Seluler (Android/iOS). Untuk Switch/Konsol, Anda harus mengekspornya terlebih dahulu menggunakan alat homebrew.</p>
+      `,
+      engine: 'Unity (XML)',
+      format: '.xml',
+      editorPath: '/id/editor/unity',
+      emoji: '🌾',
+      image: '/images/games/stardew-valley.webp',
+      description: 'RPG simulasi pertanian tercinta dari ConcernedApe.',
+      saveLocations: {
+        windows: '%appdata%\\StardewValley\\Saves',
+        mac: '~/Library/Application Support/StardewValley/Saves',
+        linux: '~/.config/StardewValley/Saves',
+      },
+      editableItems: [
+        { icon: '💰', name: 'Emas dan Uang', desc: 'Edit pendapatan peternakan Anda' },
+        { icon: '🎒', name: 'Inventaris', desc: 'Tambahkan item apa pun ke tas Anda' },
+        { icon: '❤️', name: 'Hubungan', desc: 'Ubah hati pertemanan' },
+        { icon: '📈', name: 'Keahlian', desc: 'Naikkan level pertanian, dll.' },
+        { icon: '🏆', name: 'Pencapaian', desc: 'Buka bundel pusat komunitas' },
+        { icon: '🗓️', name: 'Waktu dan Musim', desc: 'Ubah tanggal saat ini' },
+      ],
+      faq: [
+        {
+          question: 'Di mana lokasi file simpanan Stardew Valley?',
+          answer:
+            'Di Windows, simpanan Anda ada di %appdata%\\StardewValley\\Saves. Setiap folder memiliki nama petani Anda (misalnya FarmerName_123456789).',
+        },
+        {
+          question: 'Bisakah saya mengedit game multipemain?',
+          answer:
+            'Ya, tetapi Anda hanya boleh mengedit game Anda sendiri sebagai host. Berhatihatilah agar tidak merusak data peternakan bersama.',
+        },
+        {
+          question: 'Apakah pengeditan akan merusak game saya?',
+          answer:
+            'Selalu buat cadangan sebelumnya! Editor kami memvalidasi perubahan, tetapi modifikasi ekstrem dapat menyebabkan masalah.',
+        },
+      ],
+      relatedGuides: [
+        { title: 'Cara mengedit simpanan Unity', url: '/id/blog/how-to-edit-unity-saves' },
+      ],
+    },
+    {
+      slug: 'palworld',
+      name: 'Palworld',
+      seoDescription:
+        'Alur Palworld `.sav` untuk varian GVAS standar. Inspeksi aman terlebih dahulu, pengeditan hati-hati pada file yang kompatibel dan fallback jelas ke hanya baca.',
+      seoContent: `
+        <h2>Pengeditan Lanjutan Palworld</h2>
+        <p>Alur kami untuk Palworld memprioritaskan <strong>keamanan file</strong>. Berfungsi paling baik dengan simpanan GVAS standar dan dapat mengaktifkan mode hanya baca pada varian yang terbungkus atau khusus.</p>
+        <h3>Apa yang bisa diedit pada varian yang kompatibel:</h3>
+        <ul>
+            <li><strong>Pals:</strong> Tinjau kemampuan/statistik yang terekspos dan sesuaikan dengan cadangan sebelumnya.</li>
+            <li><strong>Pemain:</strong> Sesuaikan bidang progres saat parsing lengkap dan aman.</li>
+            <li><strong>Basis dan Item:</strong> Inspeksi struktur sebelum menerapkan perubahan konservatif.</li>
+        </ul>
+      `,
+      engine: 'Unreal Engine (GVAS)',
+      format: '.sav',
+      editorPath: '/id/editor/palworld',
+      emoji: '🦎',
+      image: '/images/games/palworld.webp',
+      description: 'Game viral tentang bertahan hidup dan mengoleksi makhluk.',
+      saveLocations: {
+        windows: '%localappdata%\\Pal\\Saved\\SaveGames',
+        mac: '~/Library/Application Support/Pal/Saved/SaveGames',
+        linux:
+          '~/.steam/steam/steamapps/compatdata/1623730/pfx/drive_c/users/steamuser/AppData/Local/Pal/Saved/SaveGames',
+      },
+      editableItems: [
+        { icon: '💰', name: 'Emas', desc: 'Inspeksi atau sesuaikan mata uang dalam file yang kompatibel' },
+        { icon: '🦎', name: 'Pals', desc: 'Tinjau struktur Pal dan edit dengan hati-hati' },
+        { icon: '📈', name: 'Stats Pemain', desc: 'Kemungkinan penyesuaian pada varian yang dapat di-parse' },
+        { icon: '🎒', name: 'Inventaris', desc: 'Tinjauan array item dengan pengujian konservatif' },
+        { icon: '⚔️', name: 'Peralatan', desc: 'Validasi catatan dalam struktur yang kompatibel' },
+        { icon: '🏠', name: 'Progres Basis', desc: 'Tampilan data basis saat terekspos di GVAS' },
+      ],
+      faq: [
+        {
+          question: 'Di mana file Palworld berada?',
+          answer:
+            'Windows: %localappdata%\\Pal\\Saved\\SaveGames. Setiap dunia memiliki foldernya sendiri.',
+        },
+        {
+          question: 'Bisakah saya mengedit simpanan Game Pass?',
+          answer:
+            'Editor ini berfungsi secara asli dengan file Steam. Untuk Game Pass, Anda perlu mendekripsi wadahnya terlebih dahulu.',
+        },
+      ],
+      relatedGuides: [
+        {
+          title: 'Panduan Edit Simpanan Palworld',
+          url: '/id/blog/palworld-save-editing-guide',
+        },
+        {
+          title: 'Cara mengedit simpanan Unreal Engine',
+          url: '/id/blog/how-to-edit-unreal-engine-saves',
+        },
+      ],
+    },
+    {
+      slug: 'undertale',
+      name: 'Undertale',
+      seoDescription:
+        'Editor Simpanan Undertale Gratis. Edit file0 dan undertale.ini. Ubah HP, Emas, EXP, nilai FUN, dan bendera Genocide.',
+      seoContent: `
+        <h2>Editor File Undertale (file0 & undertale.ini)</h2>
+        <p>Undertale menggunakan dua file utama: <code>file0</code> (slot simpanan aktif Anda) dan <code>undertale.ini</code> (metadata dan bendera persisten). Editor kami dapat mengubah keduanya.</p>
+        <h3>Edit Umum</h3>
+        <ul>
+            <li><strong>Jalur Genocide/Pacifist:</strong> Setel ulang atau aktifkan bendera jalur tertentu untuk mengubah cerita tanpa bermain ulang.</li>
+            <li><strong>Nilai FUN:</strong> Edit variabel 'fun' di <code>undertale.ini</code> untuk mengaktifkan acara acak (seperti pengikut Gaster).</li>
+            <li><strong>Statistik Pertempuran:</strong> Ubah HP, ATK, DEF, dan EXP untuk mempermudah atau mempersulit pertempuran.</li>
+        </ul>
+      `,
+      engine: 'GameMaker',
+      format: 'file0, undertale.ini',
+      editorPath: '/id/editor/gamemaker',
+      emoji: '❤️',
+      image: '/images/games/undertale.webp',
+      description: 'RPG indie ikonik dari Toby Fox di mana tidak ada yang harus mati.',
+      saveLocations: {
+        windows: '%localappdata%\\UNDERTALE',
+        mac: '~/Library/Application Support/com.tobyfox.undertale/',
+        linux: '~/.config/UNDERTALE',
+      },
+      editableItems: [
+        { icon: '❤️', name: 'HP dan LOVE', desc: 'Ubah kesehatan dan level LOVE' },
+        { icon: '🎒', name: 'Inventaris', desc: 'Edit item di inventaris Anda' },
+        { icon: '💰', name: 'Emas (G)', desc: 'Ubah uang Anda' },
+        { icon: '📍', name: 'Lokasi', desc: 'Ubah titik simpan Anda' },
+        { icon: '🎮', name: 'Bendera Game', desc: 'Alihkan progres cerita' },
+        { icon: '👤', name: 'Nama', desc: 'Ubah nama manusia yang jatuh' },
+      ],
+      faq: [
+        {
+          question: 'Di mana simpanan Undertale berada?',
+          answer:
+            'Windows: %localappdata%\\UNDERTALE. File utama: file0 dan undertale.ini.',
+        },
+        {
+          question: 'Bagaimana cara melakukan True Reset?',
+          answer:
+            'Anda dapat mengedit simpanan Anda untuk memulihkan status sebelumnya atau menyetel ulang bendera di undertale.ini.',
+        },
+      ],
+      relatedGuides: [
+        { title: 'Panduan edit GameMaker', url: '/id/blog/gamemaker-save-editing-guide' },
+      ],
+    },
+    {
+      slug: 'ddlc',
+      name: 'Doki Doki Literature Club',
+      seoDescription:
+        'Editor Simpanan DDLC. Edit file .save, data persisten, dan kata-kata puisi. Buka CG dan Ending secara online.',
+      seoContent: `
+        <h2>Editor Data dan Simpanan DDLC</h2>
+        <p>Di Doki Doki Literature Club, memanipulasi file adalah bagian dari game. Editor ini memungkinkan Anda mengubah data <code>.save</code> Ren'Py dan file <code>persisten</code>.</p>
+        <h3>Buka Semuanya</h3>
+        <p>Dengan mengedit data <code>persisten</code>, Anda dapat langsung membuka semua CG (gambar) di galeri dan trek musik.</p>
+      `,
+      engine: "Ren'Py",
+      format: '.save, persistent',
+      editorPath: '/id/editor/renpy',
+      emoji: '📚',
+      image: '/images/games/ddlc.webp',
+      description: 'Novel visual horor psikologis yang tidak seperti kelihatannya.',
+      saveLocations: {
+        windows: '%appdata%\\RenPy\\DDLC-1454445547',
+        mac: '~/Library/RenPy/DDLC-1454445547',
+        linux: '~/.renpy/DDLC-1454445547',
+      },
+      editableItems: [
+        { icon: '📖', name: 'Progres Cerita', desc: 'Lompat ke bab mana pun' },
+        { icon: '📝', name: 'Variabel Puisi', desc: 'Ubah kata-kata puisi' },
+        { icon: '❤️', name: 'Afinitas', desc: 'Ubah hubungan dengan karakter' },
+        { icon: '🖼️', name: 'Galeri CG', desc: 'Buka semua gambar' },
+      ],
+      faq: [
+        {
+          question: 'Di mana simpanan DDLC saya?',
+          answer:
+            'Windows: %appdata%\\RenPy\\DDLC-1454445547. Untuk DDLC Plus: %appdata%\\..\\LocalLow\\Team Salvato',
+        },
+      ],
+      relatedGuides: [{ title: "Panduan edit Ren'Py", url: '/id/blog/renpy-save-editing-guide' }],
+    },
+    {
+      slug: 'hollow-knight',
+      name: 'Hollow Knight',
+      engine: 'Unity',
+      format: 'user#.dat',
+      editorPath: '/id/editor/unity',
+      emoji: '🪲',
+      image: '/images/games/hollow-knight.webp',
+      description: 'Metroidvania yang diakui secara kritis dari Team Cherry.',
+      saveLocations: {
+        windows: '%appdata%\\..\\LocalLow\\Team Cherry\\Hollow Knight',
+        mac: '~/Library/Application Support/unity.Team Cherry.Hollow Knight',
+        linux: '~/.config/unity3d/Team Cherry/Hollow Knight',
+      },
+      editableItems: [
+        { icon: '💰', name: 'Geo', desc: 'Edit mata uang Anda' },
+        { icon: '❤️', name: 'Mask', desc: 'Ubah HP maksimum' },
+        { icon: '💎', name: 'Soul', desc: 'Ubah pengukur soul' },
+        { icon: '🗡️', name: 'Nail', desc: 'Buka peningkatan nail' },
+        { icon: '✨', name: 'Charm', desc: 'Edit notch dan charm' },
+      ],
+      faq: [
+        {
+          question: 'Di mana simpanan Hollow Knight berada?',
+          answer:
+            'Windows: %appdata%\\..\\LocalLow\\Team Cherry\\Hollow Knight. File user1.dat, dll.',
+        },
+      ],
+      relatedGuides: [
+        { title: 'Cara mengedit simpanan Unity', url: '/id/blog/how-to-edit-unity-saves' },
+      ],
+    },
+    {
+      slug: 'rpg-maker',
+      name: 'Game RPG Maker',
+      engine: 'RPG Maker (MV/MZ)',
+      format: '.rpgsave, .rmmzsave',
+      editorPath: '/id/editor/rpg-maker-mv',
+      emoji: '⚔️',
+      image: '/images/games/hollow-knight.webp',
+      description: 'Ribuan game yang dibuat dengan seri RPG Maker.',
+      saveLocations: {
+        windows: 'Folder game/www/save atau Folder game/save',
+        mac: 'Game.app/Contents/Resources/app.nw/save',
+        linux: 'Folder game/save',
+      },
+      editableItems: [
+        { icon: '💰', name: 'Emas', desc: 'Edit emas tim' },
+        { icon: '👥', name: 'Stats Tim', desc: 'Ubah HP, MP, Level, EXP' },
+        { icon: '🎒', name: 'Inventaris', desc: 'Tambah dan hapus item' },
+        { icon: '⚔️', name: 'Peralatan', desc: 'Ubah senjata dan armor' },
+        { icon: '✨', name: 'Keahlian', desc: 'Pelajari keahlian apa pun' },
+        { icon: '🎮', name: 'Sakelar', desc: 'Edit logika game' },
+      ],
+      faq: [
+        {
+          question: 'Di mana simpanan RPG Maker berada?',
+          answer:
+            'Sebagian besar di www/save di dalam direktori game. Game browser menggunakan localStorage.',
+        },
+      ],
+      relatedGuides: [
+        { title: 'Cara mengedit simpanan RPG Maker', url: '/id/blog/how-to-edit-rpg-maker-save' },
+      ],
+    },
+  ];
+
+  return games.map((game) => ({
+    params: { slug: game.slug },
+    props: { game },
+  }));
+}
+
+const { game } = Astro.props;
+const siteOrigin = Astro.site ? new URL(Astro.site).origin : 'https://saveeditor.top';
+const absUrl = (path: string) =>
+  new URL(path.endsWith('/') ? path : `${path}/`, siteOrigin).toString();
+---
+
+<BaseLayout
+  title={`Editor Simpanan ${game.name} - Edit File ${game.format} Online Gratis`}
+  description={game.seoDescription ||
+    `Editor online gratis untuk ${game.name}. Edit emas, item, statistik, dan lainnya. Temukan lokasi file simpanan dan mulai mengedit.`}
+  keywords={`${game.name.toLowerCase()} save editor, ${game.name.toLowerCase()} lokasi simpanan, ${game.name.toLowerCase()} edit simpanan, ${game.format} editor`}
+>
+  <!-- Hero Section -->
+  <section class="relative bg-slate-900 text-white overflow-hidden">
+    <!-- Background Image with Overlay -->
+    <div class="absolute inset-0 z-0">
+      <img
+        src={game.image}
+        alt={`Latar belakang ${game.name}`}
+        class="w-full h-full object-cover opacity-20 blur-sm"
+      />
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/80 to-slate-900"
+      >
+      </div>
+    </div>
+
+    <div class="relative z-10 container mx-auto px-4 py-20 lg:py-28">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="mb-8 relative inline-block group">
+          <div
+            class="absolute -inset-1 bg-gradient-to-r from-primary-600 to-cyan-600 rounded-2xl blur opacity-40 group-hover:opacity-75 transition duration-200"
+          >
+          </div>
+          <img
+            src={game.image}
+            alt={game.name}
+            class="relative w-full max-w-lg h-auto rounded-xl shadow-2xl border border-white/10 mx-auto transform transition hover:scale-[1.02]"
+          />
+          <div
+            class="absolute -top-6 -right-6 w-16 h-16 bg-primary-600 rounded-2xl flex items-center justify-center text-4xl shadow-lg rotate-12"
+          >
+            {game.emoji}
+          </div>
+        </div>
+
+        <h1 class="text-5xl lg:text-7xl font-bold tracking-tight mb-6 mt-8">
+          Editor Simpanan
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-cyan-400"
+            >{game.name}</span
+          >
+        </h1>
+        <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+          {game.description} Edit file simpanan Anda secara online gratis.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 mb-8">
+          <span class="px-4 py-2 bg-white/10 rounded-full text-sm">
+            Engine: {game.engine}
+          </span>
+          <span class="px-4 py-2 bg-white/10 rounded-full text-sm">
+            Format: {game.format}
+          </span>
+          <span class="px-4 py-2 bg-green-500/20 text-green-300 rounded-full text-sm">
+            ✓ 100% Gratis
+          </span>
+        </div>
+
+        <a
+          href={game.editorPath}
+          class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-900 bg-gradient-to-r from-primary-400 to-cyan-400 rounded-xl hover:opacity-90 transition-opacity shadow-lg"
+        >
+          Mulai Mengedit {game.name} →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="container mx-auto px-4 py-16">
+    <div class="max-w-6xl mx-auto">
+      <!-- What Can You Edit Section -->
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">
+          Apa yang bisa Anda edit di {game.name}?
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {
+            game.editableItems.map((item: { icon: string; name: string; desc: string }) => (
+              <div class="p-6 bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <div class="text-3xl mb-3">{item.icon}</div>
+                <h3 class="font-bold text-gray-900 mb-2">{item.name}</h3>
+                <p class="text-gray-600 text-sm">{item.desc}</p>
+              </div>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Save File Location Section -->
+      <section class="mb-16 bg-gray-50 rounded-2xl p-8">
+        <h2 class="text-2xl font-bold mb-6 text-gray-900">
+          📂 Lokasi File Simpanan {game.name}
+        </h2>
+        <div class="space-y-4">
+          <div class="bg-white p-4 rounded-lg border border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded"
+                >Windows</span
+              >
+            </div>
+            <code class="text-sm text-gray-600 break-all">{game.saveLocations.windows}</code>
+          </div>
+          <div class="bg-white p-4 rounded-lg border border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-3 py-1 bg-gray-100 text-gray-700 text-sm font-medium rounded"
+                >macOS</span
+              >
+            </div>
+            <code class="text-sm text-gray-600 break-all">{game.saveLocations.mac}</code>
+          </div>
+          <div class="bg-white p-4 rounded-lg border border-gray-200">
+            <div class="flex items-center gap-3 mb-2">
+              <span class="px-3 py-1 bg-orange-100 text-orange-700 text-sm font-medium rounded"
+                >Linux</span
+              >
+            </div>
+            <code class="text-sm text-gray-600 break-all">{game.saveLocations.linux}</code>
+          </div>
+        </div>
+        <p class="text-gray-500 text-sm mt-4">
+          💡 Tips: Tekan Win+R di Windows dan tempel jalur untuk mengakses dengan cepat.
+        </p>
+      </section>
+
+      <!-- How to Edit Section -->
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">
+          Cara Mengedit Simpanan {game.name}
+        </h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center p-6">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg"
+            >
+              1
+            </div>
+            <h3 class="font-bold text-lg mb-2">Temukan Simpanan Anda</h3>
+            <p class="text-gray-600">
+              Gunakan jalur di atas. Buat cadangan terlebih dahulu!
+            </p>
+          </div>
+          <div class="text-center p-6">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg"
+            >
+              2
+            </div>
+            <h3 class="font-bold text-lg mb-2">Unggah dan Edit</h3>
+            <p class="text-gray-600">
+              {
+                game.slug === 'palworld'
+                  ? 'Unggah `.sav` Anda dan periksa dulu mode kompatibilitasnya. Jika muncul hanya baca, gunakan untuk inspeksi dan beralih ke alat khusus untuk menyimpan.'
+                  : 'Seret file Anda ke editor. Ubah emas, item, dan statistik.'
+              }
+            </p>
+          </div>
+          <div class="text-center p-6">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold shadow-lg"
+            >
+              3
+            </div>
+            <h3 class="font-bold text-lg mb-2">Unduh dan Mainkan</h3>
+            <p class="text-gray-600">
+              {
+                game.slug === 'palworld'
+                  ? 'Unduh hanya jika editor mengonfirmasi mode dapat diedit dan penyimpanan yang kompatibel. Jika tidak, simpan cadangan Anda dan gunakan alat khusus.'
+                  : 'Ganti file asli dengan file yang telah diedit. Mulai game!'
+              }
+            </p>
+          </div>
+        </div>
+        <div class="text-center mt-8">
+          <a
+            href={game.editorPath}
+            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition-colors"
+          >
+            Buka Editor {game.name}
+          </a>
+        </div>
+      </section>
+
+      <!-- FAQ Section -->
+      <section class="mb-16">
+        <h2 class="text-3xl font-bold text-center mb-8 text-gray-900">Pertanyaan yang Sering Diajukan</h2>
+        <div class="max-w-3xl mx-auto space-y-4">
+          {
+            game.faq.map((item: { question: string; answer: string }) => (
+              <details class="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <summary class="flex items-center justify-between p-6 cursor-pointer font-semibold text-gray-900 hover:bg-gray-50">
+                  {item.question}
+                  <svg
+                    class="w-5 h-5 text-gray-500 group-open:rotate-180 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </summary>
+                <div class="px-6 pb-6 text-gray-600">{item.answer}</div>
+              </details>
+            ))
+          }
+        </div>
+      </section>
+
+      <!-- Related Guides -->
+      {
+        game.relatedGuides.length > 0 && (
+          <section class="mb-16 bg-primary-50 rounded-2xl p-8">
+            <h2 class="text-2xl font-bold mb-6 text-gray-900">📖 Panduan Terkait</h2>
+            <div class="space-y-4">
+              {game.relatedGuides.map((guide: { title: string; url: string }) => (
+                <a
+                  href={guide.url}
+                  class="flex items-center justify-between p-4 bg-white rounded-lg border border-primary-100 hover:border-primary-300 transition-colors"
+                >
+                  <span class="font-medium text-gray-900">{guide.title}</span>
+                  <svg
+                    class="w-5 h-5 text-primary-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </a>
+              ))}
+            </div>
+          </section>
+        )
+      }
+
+      <!-- Related Games (Cross-linking) -->
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-center mb-6 text-gray-900">Game Populer Lainnya</h2>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
+          {
+            game.slug !== 'stardew-valley' && (
+              <a
+                href="/id/games/stardew-valley"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">🌾</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  Stardew Valley
+                </span>
+              </a>
+            )
+          }
+          {
+            game.slug !== 'palworld' && (
+              <a
+                href="/id/games/palworld"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">🦎</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  Palworld
+                </span>
+              </a>
+            )
+          }
+          {
+            game.slug !== 'undertale' && (
+              <a
+                href="/id/games/undertale"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">❤️</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  Undertale
+                </span>
+              </a>
+            )
+          }
+          {
+            game.slug !== 'ddlc' && (
+              <a
+                href="/id/games/ddlc"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">📚</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  DDLC
+                </span>
+              </a>
+            )
+          }
+          {
+            game.slug !== 'hollow-knight' && (
+              <a
+                href="/id/games/hollow-knight"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">🪲</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  Hollow Knight
+                </span>
+              </a>
+            )
+          }
+          {
+            game.slug !== 'rpg-maker' && (
+              <a
+                href="/id/games/rpg-maker"
+                class="p-4 bg-white rounded-xl border border-gray-100 hover:border-primary-300 hover:shadow-md transition-all text-center group"
+              >
+                <span class="text-2xl block mb-2">⚔️</span>
+                <span class="font-medium text-gray-900 group-hover:text-primary-600 text-sm">
+                  RPG Maker
+                </span>
+              </a>
+            )
+          }
+        </div>
+        <div class="text-center mt-6">
+          <a href="/id/games" class="text-primary-600 hover:text-primary-700 font-medium">
+            Lihat Semua Game →
+          </a>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="bg-gray-900 text-white rounded-2xl p-12 text-center">
+        <h2 class="text-3xl font-bold mb-4">Siap untuk mengedit simpanan {game.name}?</h2>
+        <p class="text-gray-300 mb-8 max-w-xl mx-auto">
+          100% gratis, tanpa unduhan. File Anda tidak pernah meninggalkan perangkat Anda.
+        </p>
+        <a
+          href={game.editorPath}
+          class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-gray-900 bg-white rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          Mulai Mengedit Sekarang →
+        </a>
+      </section>
+    </div>
+
+    {/* SEO Content Section */}
+    {
+      game.seoContent && (
+        <section class="max-w-4xl mx-auto mt-16 prose prose-lg prose-slate px-6 py-8 bg-white rounded-2xl shadow-sm border border-gray-100">
+          <Fragment set:html={game.seoContent} />
+        </section>
+      )
+    }
+  </section>
+
+  <!-- SoftwareApplication Schema -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://saveeditor.top/id/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Game',
+          item: 'https://saveeditor.top/id/games/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: game.name,
+          item: `https://saveeditor.top/id/games/${game.slug}/`,
+        },
+      ],
+    })}
+  />
+
+  <!-- FAQ Schema -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: game.faq.map((item: { question: string; answer: string }) => ({
+        '@type': 'Question',
+        name: item.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: item.answer,
+        },
+      })),
+    })}
+  />
+
+  <!-- SoftwareApplication Schema -->
+  <script
+    type="application/ld+json"
+    set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: `${game.name} Save Editor`,
+      applicationCategory: 'UtilitiesApplication',
+      operatingSystem: 'Web Browser',
+      url: absUrl(`/id/games/${game.slug}`),
+      author: {
+        '@type': 'Organization',
+        name: 'SaveEditor.Online',
+        url: absUrl('/id/'),
+      },
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD',
+      },
+    })}
+  />
+</BaseLayout>
