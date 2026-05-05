@@ -78,6 +78,10 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
                     const { parseRPGMakerMV } = await import('../lib/parsers/rpgmaker');
                     outcome = await parseRPGMakerMV(file);
                     setFormat('rpgmaker');
+                } else if (ext === 'tres' || ext === 'res' || ext === 'tscn' || ext === 'godot') {
+                    const { parseGodot } = await import('../lib/parsers/godot');
+                    outcome = await parseGodot(file);
+                    setFormat(outcome.format);
                 } else {
                     // Fallback to Gamemaker / Generic
                     const { parseGamemaker } = await import('../lib/parsers/gamemaker');
@@ -155,6 +159,9 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
             } else if (format === 'rpgmaker') {
                 const { buildRPGMakerMV } = await import('../lib/parsers/rpgmaker');
                 blob = await buildRPGMakerMV(file, data);
+            } else if (format.startsWith('godot')) {
+                const { buildGodot } = await import('../lib/parsers/godot');
+                blob = await buildGodot(file, data, format);
             } else {
                 // Gamemaker / Raw
                 const { buildGamemaker } = await import('../lib/parsers/gamemaker');

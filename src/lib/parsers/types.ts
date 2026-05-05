@@ -5,7 +5,8 @@ export type ParserEngine =
     | 'unreal'
     | 'palworld'
     | 'gamemaker'
-    | 'naninovel';
+    | 'naninovel'
+    | 'godot';
 
 export type RoundTripSupportLevel = 'stable' | 'experimental' | 'none';
 
