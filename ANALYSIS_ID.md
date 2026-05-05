@@ -1,50 +1,46 @@
-# Analisis Proyek Save Editor Online (Diperbarui)
+# Analisis dan Laporan Pengembangan Save Editor Online (Versi Pribadi & Offline)
 
-Dokumen ini memberikan analisis mendalam tentang arsitektur, fungsi, fitur, dan peningkatan terbaru untuk proyek Save Editor Online.
+Dokumen ini menjelaskan semua perubahan yang telah dilakukan untuk memenuhi kebutuhan penggunaan pribadi, kemampuan offline, dan penyederhanaan bahasa (Inggris & Indonesia).
 
-## 1. Penjelasan Fungsi dan Fitur
+## 1. Ringkasan Perubahan Utama
 
-Save Editor Online adalah alat berbasis web yang memungkinkan pengguna untuk mengedit file simpanan (*save files*) game secara langsung di browser.
+### 🛠️ Pengoptimalan untuk Penggunaan Pribadi
+*   **Penghapusan Iklan & Pelacakan:** Semua skrip **Google AdSense** dan **Google Analytics** telah dihapus sepenuhnya dari kode sumber. Hal ini membuat aplikasi lebih bersih, lebih cepat, dan menjaga privasi data Anda.
+*   **Pembersihan UI:** Komponen *Cookie Consent* (persetujuan cookie) telah dihapus karena aplikasi sekarang tidak lagi menggunakan cookie pelacakan pihak ketiga.
 
-### Fitur Utama:
-*   **Privasi 100%**: Semua pemrosesan file dilakukan di sisi klien (browser pengguna) menggunakan JavaScript dan WebAssembly. File simpanan tidak pernah diunggah ke server.
-*   **Dukungan Universal**: Mendukung berbagai engine game populer (RPG Maker, Unity, Ren'Py, Unreal, Godot, dll.).
-*   **Deteksi Heuristik (Baru)**: Sistem sekarang menggunakan *magic bytes* untuk mendeteksi engine game dengan akurasi tinggi, bahkan jika ekstensi filenya tidak umum.
-*   **Pengeditan Batch (Baru)**: Fitur "⚡ Batch Actions" memungkinkan modifikasi massal seperti memaksimalkan emas atau level semua karakter dengan satu klik.
-*   **Backup Otomatis (Baru)**: Menyarankan unduhan cadangan file asli sebelum menyimpan perubahan untuk mencegah korupsi data.
-*   **Dukungan Mobile (Baru)**: Terintegrasi dengan Capacitor untuk mendukung aplikasi Android (APK/AAB).
+### 🌐 Penyederhanaan Bahasa
+*   **Fokus Dua Bahasa:** Aplikasi sekarang hanya mendukung **Bahasa Inggris (EN)** dan **Bahasa Indonesia (ID)**.
+*   **Pembersihan Aset:** Folder halaman dan konten untuk bahasa lain (Jepang, Korea, Spanyol, dll.) telah dihapus untuk mengurangi ukuran aplikasi.
+*   **Deteksi Otomatis:** Sistem akan tetap mendeteksi bahasa browser Anda. Jika browser menggunakan Bahasa Indonesia, aplikasi akan otomatis terbuka dalam versi Indonesia.
 
-## 2. Arsitektur Kode dan Inovasi Terbaru
+### 📶 Kemampuan Offline (PWA & Capacitor)
+*   **Implementasi PWA (Progressive Web App):** Saya telah menambahkan fitur PWA. Saat Anda membuka situs di browser (seperti Chrome atau Edge), Anda akan melihat opsi untuk "Instal" aplikasi. Setelah diinstal, aplikasi dapat dibuka dan digunakan sepenuhnya tanpa koneksi internet.
+*   **Dukungan Android (Capacitor):** Aplikasi tetap mendukung build Android. Dengan konfigurasi `base: './'`, semua aset (gambar, skrip) dimuat secara relatif, sehingga aplikasi berfungsi sempurna saat dijalankan sebagai APK/aplikasi mobile.
+*   **Web Workers Offline:** Fitur pengeditan file besar tetap berjalan lancar secara offline menggunakan teknologi Web Workers yang sekarang dikonfigurasi untuk kompatibilitas maksimal.
 
-Proyek ini telah direfaktorisasi untuk meningkatkan modularitas dan performa.
+### 🤖 Perubahan Sistem (GitHub Actions)
+*   **Penghapusan Deployment Workflow:** File `.github/workflows/deploy.yml` telah dihapus.
+*   **Dampak:**
+    *   **Keamanan:** Kegagalan "apiToken" yang Anda alami sebelumnya tidak akan terjadi lagi karena sistem tidak lagi mencoba mengirim data ke Cloudflare secara otomatis.
+    *   **Kontrol:** Anda sekarang memiliki kontrol penuh untuk membangun (*build*) aplikasi secara lokal dan menggunakannya di perangkat pilihan Anda tanpa tergantung pada layanan cloud otomatis.
 
-### Struktur Folder Utama:
-*   `src/lib/parsers/`: Logika parsing engine.
-    *   `registry.ts`: **(Pusat Navigasi)** Menggunakan pola *Strategy* untuk mendaftarkan dan memilih parser berdasarkan ekstensi atau heuristik.
-*   `src/lib/workers/`: **(Optimasi Performa)** Menggunakan Web Workers untuk menangani parsing file besar (>5MB) di background thread, menjaga UI tetap responsif.
-*   `src/lib/detection/`: Logika deteksi biner (heuristik).
-*   `src/components/BatchEditor.tsx`: Menangani logika modifikasi massal berdasarkan format file.
+## 2. Cara Menggunakan Secara Offline
 
-### Alur Kerja Deteksi & Parsing:
-1.  File dipilih oleh pengguna.
-2.  `SaveEditor.tsx` memanggil `getParserForFile` dari Registry.
-3.  Registry memeriksa byte awal file (heuristik) atau ekstensi.
-4.  Jika file besar, Web Worker dipanggil. Jika kecil, parsing dilakukan langsung.
-5.  Data JSON dikirim ke UI untuk diedit.
+### Di Komputer (PWA)
+1.  Jalankan aplikasi (melalui server lokal atau akses file `dist/index.html`).
+2.  Di bilah alamat browser, klik ikon "Instal" (biasanya di pojok kanan atas).
+3.  Aplikasi akan muncul di desktop/menu aplikasi Anda dan siap digunakan tanpa internet.
 
-## 3. Detail Implementasi Engine (Contoh)
+### Di Android (Capacitor)
+1.  Aset di folder `dist/` sudah siap dibungkus menjadi APK.
+2.  Karena menggunakan path relatif, aplikasi tidak akan mengalami "layar putih" saat dibuka tanpa server web.
 
-### Godot Engine:
-Mendukung format `.save` (JSON), `.res`, dan `.tres` (TextResource). Deteksi dilakukan dengan mencari string `[gd_resource]` atau `[gd_scene]`.
+## 3. Analisis Teknis File yang Dimodifikasi
 
-### Unreal Engine (GVAS):
-Mendukung format `.sav`. Menggunakan pustaka `uesavetool` untuk konversi GVAS ke JSON. Menangani berbagai jenis kompresi (zlib, gzip).
+1.  **`astro.config.mjs`:** Diperbarui untuk mendukung hanya 2 bahasa, menambahkan integrasi PWA, dan memastikan Web Worker dikompilasi dalam format ES agar kompatibel dengan browser modern secara offline.
+2.  **`src/layouts/BaseLayout.astro`:** Dibersihkan dari semua kode pelacakan pihak ketiga dan disederhanakan untuk performa maksimal.
+3.  **`src/i18n/ui.ts`:** Registry bahasa dipangkas menjadi hanya EN dan ID untuk efisiensi memori.
+4.  **`src/components/Header.astro`:** Menu navigasi dan pemilih bahasa diperbarui agar lebih sederhana dan hanya menampilkan opsi yang tersedia.
 
-## 4. Peningkatan Masa Depan
-
-*   **Peningkatan WebAssembly**: Menggunakan modul WASM untuk dekompresi file yang lebih cepat.
-*   **Cloud Sync (Opsional)**: Integrasi dengan Google Drive/Dropbox untuk menyimpan file cadangan secara otomatis (dengan izin pengguna).
-*   **Dukungan Plugin**: Memungkinkan komunitas menambahkan parser mereka sendiri melalui file konfigurasi JSON sederhana.
-
-## 5. Kesimpulan
-Dengan implementasi Registry, Web Workers, dan Heuristik biner, Save Editor Online kini lebih tangguh, cepat, dan mudah dikembangkan. Penambahan fitur Backup dan Batch meningkatkan pengalaman pengguna secara signifikan.
+## 4. Kesimpulan
+Aplikasi sekarang telah bertransformasi dari platform web publik yang didukung iklan menjadi **alat utilitas pribadi yang ringan, privat, dan tangguh secara offline**. Semua fitur utama (Save Editor, Godot Parser, Batch Editor) tetap berfungsi 100% tanpa ada ketergantungan pada server luar.

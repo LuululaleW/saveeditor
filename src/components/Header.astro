@@ -6,26 +6,19 @@ const t = useTranslations(lang);
 const homeHref = lang === 'en' ? '/' : `/${lang}/`;
 const withTrailingSlash = (path: string) => (path.endsWith('/') ? path : `${path}/`);
 
-// Remove language prefix from current path (supports all languages including those with hyphens)
+// Remove language prefix from current path
 let currentPath =
   Astro.url.pathname.replace(new RegExp(`^/(${Object.keys(languages).join('|')})`), '') || '/';
 const normalizedPath = currentPath.endsWith('/') ? currentPath : `${currentPath}/`;
 const isCurrentPath = (path: string) => normalizedPath === (path.endsWith('/') ? path : `${path}/`);
 
 // Detect blog article pages and extract article slug for smart language switching
-// Detect blog article pages and extract article slug for smart language switching
-// Blog URL patterns:
-// - English: /blog/article-slug
-// - Other languages: /{lang}/blog/article-slug
-const supportedLangs = Object.keys(languages)
-  .filter((k) => k !== 'en')
-  .join('|');
 const blogArticleMatch =
-  Astro.url.pathname.match(new RegExp(`^/(${supportedLangs})/blog/(.+)$`)) ||
+  Astro.url.pathname.match(/^\/id\/blog\/(.+)$/) ||
   Astro.url.pathname.match(/^\/blog\/(.+)$/);
 const blogArticleSlug = blogArticleMatch
-  ? blogArticleMatch.length === 3
-    ? blogArticleMatch[2]
+  ? blogArticleMatch.length === 2
+    ? blogArticleMatch[1]
     : blogArticleMatch[1]
   : null;
 const isBlogArticle = Boolean(blogArticleSlug);
@@ -33,12 +26,10 @@ const isBlogArticle = Boolean(blogArticleSlug);
 // Function to generate correct blog URL for target language
 const getBlogUrl = (targetLang: string): string => {
   if (isBlogArticle && blogArticleSlug) {
-    // For blog articles, construct the correct path based on target language
     return targetLang === 'en'
       ? `/blog/${blogArticleSlug}/`
       : `/${targetLang}/blog/${blogArticleSlug}/`;
   }
-  // For non-blog pages, use normal path construction
   const href =
     targetLang === 'en'
       ? currentPath === '/'

@@ -1,0 +1,21 @@
+
+> save-editor-online@0.0.1 dev
+> astro dev
+
+(node:1678691) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+10:40:33 [@astrojs/cloudflare] Enabling sessions with Cloudflare KV with the "SESSION" KV binding.
+10:40:33 [@astrojs/cloudflare] If you see the error "Invalid binding `SESSION`" in your build output, you need to add the binding to your wrangler config file.
+10:40:33 [WARN] [adapter] Cloudflare does not support sharp at runtime. However, you can configure `imageService: "compile"` to optimize images with sharp on prerendered pages during build time.
+10:40:34 [types] Generated 1ms
+10:40:35 [content] Syncing content
+10:40:35 [content] Synced content
+10:40:35 [vite] Re-optimizing dependencies because vite config has changed
+10:40:35 [vite] Port 4321 is in use, trying another one...
+
+ astro  v5.16.4 ready in 2963 ms
+
+┃ Local    http://localhost:4322/./
+┃ Network  use --host to expose
+
+10:40:35 watching for file changes...

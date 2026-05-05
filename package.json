@@ -51,9 +51,11 @@
     "@types/plist": "^3.0.5",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@vite-pwa/astro": "^1.2.0",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "unist-util-visit": "^5.1.0",
+    "workbox-window": "^7.4.1",
     "wrangler": "^4.52.1"
   }
 }
