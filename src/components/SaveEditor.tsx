@@ -28,7 +28,7 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
     const [data, setData] = useState<any>(null);
     const [format, setFormat] = useState<string>('unknown');
     const [capabilities, setCapabilities] = useState<ParserCapability | null>(null);
-    const [activeTab, setActiveTab] = useState<'quick' | 'advanced'>('quick');
+    const [activeTab, setActiveTab] = useState<'quick' | 'advanced' | 'batch'>('quick');
     const [isAdvancedLoading, setIsAdvancedLoading] = useState(false);
     const [experimentalEnabled, setExperimentalEnabled] = useState(false);
     const [errorAdvice, setErrorAdvice] = useState<string[]>([]);
@@ -49,45 +49,19 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
                     return;
                 }
 
-                const ext = file.name.split('.').pop()?.toLowerCase();
+                const { getParserForFile } = await import('../lib/parsers/registry');
+                const strategy = await getParserForFile(file, editorSlug);
 
                 let outcome: ParseOutcome<any>;
-                if (ext === 'save') {
-                    const { parseRenpy } = await import('../lib/parsers/renpy');
-                    outcome = await parseRenpy(file);
-                    setFormat('renpy');
-                } else if (['xml', 'plist', 'prefs'].includes(ext || '')) {
-                    const { parseUnity } = await import('../lib/parsers/unity');
-                    outcome = await parseUnity(file);
-                    setFormat('unity');
-                } else if (ext === 'sav') {
-                    if (editorSlug === 'palworld') {
-                        const { parsePalworld } = await import('../lib/parsers/palworld');
-                        outcome = await parsePalworld(file);
-                        setFormat('palworld');
-                    } else {
-                        const { parseUnreal } = await import('../lib/parsers/unreal');
-                        outcome = await parseUnreal(file);
-                        setFormat('unreal');
-                    }
-                } else if (ext === 'nson') {
-                    const { parseNaniNovel } = await import('../lib/parsers/naninovel');
-                    outcome = await parseNaniNovel(file);
-                    setFormat(outcome.format);
-                } else if (ext === 'rpgsave' || ext === 'rvdata2' || ext === 'rmmzsave') {
-                    const { parseRPGMakerMV } = await import('../lib/parsers/rpgmaker');
-                    outcome = await parseRPGMakerMV(file);
-                    setFormat('rpgmaker');
-                } else if (ext === 'tres' || ext === 'res' || ext === 'tscn' || ext === 'godot') {
-                    const { parseGodot } = await import('../lib/parsers/godot');
-                    outcome = await parseGodot(file);
-                    setFormat(outcome.format);
+
+                // Use Web Worker for large files (> 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    const { parseInWorker } = await import('../lib/workers/parser-client');
+                    outcome = await parseInWorker(file, strategy.id, editorSlug);
                 } else {
-                    // Fallback to Gamemaker / Generic
-                    const { parseGamemaker } = await import('../lib/parsers/gamemaker');
-                    outcome = await parseGamemaker(file);
-                    setFormat(outcome.format);
+                    outcome = await strategy.parse(file);
                 }
+                setFormat(outcome.engine === 'gamemaker' || outcome.engine === 'godot' || outcome.engine === 'naninovel' ? outcome.format : outcome.engine);
 
                 setCapabilities(outcome.capabilities);
 
@@ -95,6 +69,7 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
                     const reasonMessage =
                         outcome.reason ||
                         t('editor.parseError');
+                    const ext = file.name.split('.').pop()?.toLowerCase();
                     setError(`${t('editor.parseError')}: ${reasonMessage}`);
                     setErrorAdvice(buildErrorAdvice(ext, reasonMessage, t, outcome.reasonCode));
                     setData(null);
@@ -115,6 +90,8 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
 
         parseFile();
     }, [file, editorSlug]);
+
+    const [backupCreated, setBackupCreated] = useState(false);
 
     const handleDownload = async () => {
         if (!data) return;
@@ -140,33 +117,27 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
         }
 
         try {
-            let blob;
-            if (format === 'unity') {
-                const { buildUnity } = await import('../lib/parsers/unity');
-                blob = await buildUnity(file, data);
-            } else if (format === 'unreal') {
-                const { buildUnreal } = await import('../lib/parsers/unreal');
-                blob = await buildUnreal(file, data);
-            } else if (format === 'palworld') {
-                const { buildPalworld } = await import('../lib/parsers/palworld');
-                blob = await buildPalworld(file, data);
-            } else if (format.startsWith('naninovel')) {
-                const { buildNaniNovel } = await import('../lib/parsers/naninovel');
-                blob = await buildNaniNovel(file, data, format as any);
-            } else if (format === 'renpy') {
-                const { buildRenpy } = await import('../lib/parsers/renpy');
-                blob = await buildRenpy(file, data);
-            } else if (format === 'rpgmaker') {
-                const { buildRPGMakerMV } = await import('../lib/parsers/rpgmaker');
-                blob = await buildRPGMakerMV(file, data);
-            } else if (format.startsWith('godot')) {
-                const { buildGodot } = await import('../lib/parsers/godot');
-                blob = await buildGodot(file, data, format);
-            } else {
-                // Gamemaker / Raw
-                const { buildGamemaker } = await import('../lib/parsers/gamemaker');
-                blob = await buildGamemaker(file, { type: format, data });
+            // Automatic Backup Feature
+            if (!backupCreated) {
+                const downloadBackup = window.confirm(
+                    "Sangat disarankan untuk mengunduh cadangan (backup) file asli sebelum menyimpan perubahan. Apakah Anda ingin mengunduh cadangan sekarang?"
+                );
+                if (downloadBackup) {
+                    const backupUrl = URL.createObjectURL(file);
+                    const backupA = document.createElement('a');
+                    backupA.href = backupUrl;
+                    backupA.download = `BACKUP_${file.name}`;
+                    document.body.appendChild(backupA);
+                    backupA.click();
+                    document.body.removeChild(backupA);
+                    URL.revokeObjectURL(backupUrl);
+                    setBackupCreated(true);
+                }
             }
+
+            const { getParserForFile } = await import('../lib/parsers/registry');
+            const strategy = await getParserForFile(file, editorSlug);
+            const blob = await strategy.build(file, data, format);
 
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -321,6 +292,14 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
                                     Quick Edit
                                 </button>
                             )}
+                            {(format === 'rpgmaker') && (
+                                <button
+                                    onClick={() => setActiveTab('batch')}
+                                    className={`px-4 py-1.5 rounded-md transition-all font-medium ${activeTab === 'batch' ? 'bg-primary-50 text-primary-700 shadow-sm ring-1 ring-primary-200' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}`}
+                                >
+                                    Batch
+                                </button>
+                            )}
                             <button
                                 onClick={() => {
                                     if (activeTab !== 'advanced') {
@@ -423,7 +402,22 @@ export default function SaveEditor({ file, onBack, editorSlug }: SaveEditorProps
                     </div>
                 ) : (
                     <>
-                        {activeTab === 'quick' && showQuickEdit ? (
+                        {activeTab === 'batch' ? (
+                            <div className="space-y-6">
+                                {(() => {
+                                    const BatchEditorComp = React.lazy(() => import('./BatchEditor'));
+                                    return (
+                                        <React.Suspense fallback={<div className="animate-pulse h-32 bg-gray-100 rounded-xl"></div>}>
+                                            <BatchEditorComp
+                                                format={format}
+                                                data={data}
+                                                onChange={handleDataChange}
+                                            />
+                                        </React.Suspense>
+                                    );
+                                })()}
+                            </div>
+                        ) : activeTab === 'quick' && showQuickEdit ? (
                             format === 'rpgmaker' ? (
                                 <RpgMakerEditor data={data} onChange={handleDataChange} />
                             ) : format === 'palworld' ? (

@@ -1,6 +1,6 @@
-# Analisis Proyek Save Editor Online
+# Analisis Proyek Save Editor Online (Diperbarui)
 
-Dokumen ini memberikan analisis mendalam tentang arsitektur, fungsi, fitur, dan potensi peningkatan untuk proyek Save Editor Online.
+Dokumen ini memberikan analisis mendalam tentang arsitektur, fungsi, fitur, dan peningkatan terbaru untuk proyek Save Editor Online.
 
 ## 1. Penjelasan Fungsi dan Fitur
 
@@ -8,56 +8,43 @@ Save Editor Online adalah alat berbasis web yang memungkinkan pengguna untuk men
 
 ### Fitur Utama:
 *   **Privasi 100%**: Semua pemrosesan file dilakukan di sisi klien (browser pengguna) menggunakan JavaScript dan WebAssembly. File simpanan tidak pernah diunggah ke server.
-*   **Dukungan Universal**: Mendukung berbagai engine game populer:
-    *   **RPG Maker** (MV/MZ: `.rpgsave`, `.rmmzsave`)
-    *   **Unity** (PlayerPrefs dalam format XML/Plist)
-    *   **Ren'Py** (format `.save` berbasis Python pickle - Eksperimental)
-    *   **Unreal Engine** (format `.sav` GVAS)
-    *   **GameMaker** (format `.ini`, `.json`)
-    *   **NaniNovel** (format `.nson`)
-*   **Editor Visual**: Menyediakan antarmuka visual (Tree View) untuk mengedit variabel seperti emas (gold), status karakter, item, dan variabel lainnya tanpa perlu keahlian pemrograman.
-*   **Deteksi Otomatis**: Sistem dapat mendeteksi engine game berdasarkan ekstensi file dan kontennya.
-*   **Multibahasa**: Mendukung berbagai bahasa (Inggris, Jepang, Korea, dll.) dan akan segera mendukung Bahasa Indonesia.
+*   **Dukungan Universal**: Mendukung berbagai engine game populer (RPG Maker, Unity, Ren'Py, Unreal, Godot, dll.).
+*   **Deteksi Heuristik (Baru)**: Sistem sekarang menggunakan *magic bytes* untuk mendeteksi engine game dengan akurasi tinggi, bahkan jika ekstensi filenya tidak umum.
+*   **Pengeditan Batch (Baru)**: Fitur "⚡ Batch Actions" memungkinkan modifikasi massal seperti memaksimalkan emas atau level semua karakter dengan satu klik.
+*   **Backup Otomatis (Baru)**: Menyarankan unduhan cadangan file asli sebelum menyimpan perubahan untuk mencegah korupsi data.
+*   **Dukungan Mobile (Baru)**: Terintegrasi dengan Capacitor untuk mendukung aplikasi Android (APK/AAB).
 
-## 2. Arsitektur Kode (Perspektif Pengembangan)
+## 2. Arsitektur Kode dan Inovasi Terbaru
 
-Proyek ini dibangun menggunakan **Astro** sebagai framework web dan **React** untuk komponen interaktif (editor).
+Proyek ini telah direfaktorisasi untuk meningkatkan modularitas dan performa.
 
 ### Struktur Folder Utama:
-*   `src/pages/`: Berisi rute halaman web. Astro menangani routing statis dan dinamis (berdasarkan bahasa).
-*   `src/components/`: Berisi komponen UI React.
-    *   `EditorApp.tsx`: Komponen utama yang menangani unggahan file.
-    *   `SaveEditor.tsx`: Menangani logika parsing file dan pemilihan editor yang sesuai.
-    *   `JsonEditor.tsx`: Komponen untuk mengedit struktur data JSON secara visual.
-*   `src/lib/parsers/`: Inti dari logika aplikasi. Setiap engine memiliki parser sendiri (misal: `rpgmaker.ts`, `unity.ts`).
-*   `src/i18n/`: Berisi konfigurasi dan kamus terjemahan untuk internasionalisasi.
+*   `src/lib/parsers/`: Logika parsing engine.
+    *   `registry.ts`: **(Pusat Navigasi)** Menggunakan pola *Strategy* untuk mendaftarkan dan memilih parser berdasarkan ekstensi atau heuristik.
+*   `src/lib/workers/`: **(Optimasi Performa)** Menggunakan Web Workers untuk menangani parsing file besar (>5MB) di background thread, menjaga UI tetap responsif.
+*   `src/lib/detection/`: Logika deteksi biner (heuristik).
+*   `src/components/BatchEditor.tsx`: Menangani logika modifikasi massal berdasarkan format file.
 
-### Cara Menambahkan Parser Baru:
-1.  Buat file parser baru di `src/lib/parsers/NamaEngine.ts`.
-2.  Implementasikan fungsi `parseNamaEngine(file: File)` yang mengembalikan `Promise<ParseOutcome>`.
-3.  Implementasikan fungsi `buildNamaEngine(originalFile: File, data: any)` untuk mengonversi data kembali ke format aslinya.
-4.  Daftarkan engine baru di `src/lib/parsers/types.ts` dalam tipe `ParserEngine`.
-5.  Tambahkan logika deteksi di `src/components/SaveEditor.tsx` di dalam `useEffect` yang memanggil fungsi parse tersebut.
+### Alur Kerja Deteksi & Parsing:
+1.  File dipilih oleh pengguna.
+2.  `SaveEditor.tsx` memanggil `getParserForFile` dari Registry.
+3.  Registry memeriksa byte awal file (heuristik) atau ekstensi.
+4.  Jika file besar, Web Worker dipanggil. Jika kecil, parsing dilakukan langsung.
+5.  Data JSON dikirim ke UI untuk diedit.
 
-## 3. Peningkatan yang Disarankan
+## 3. Detail Implementasi Engine (Contoh)
 
-Berdasarkan analisis kode, berikut adalah beberapa area yang dapat ditingkatkan:
+### Godot Engine:
+Mendukung format `.save` (JSON), `.res`, dan `.tres` (TextResource). Deteksi dilakukan dengan mencari string `[gd_resource]` atau `[gd_scene]`.
 
-### Peningkatan Deteksi File (Permintaan Pengguna):
-*   **Heuristik Konten**: Selain ekstensi file, tingkatkan deteksi berdasarkan tanda tangan biner (magic bytes) di awal file. Contoh: File Unreal Engine selalu dimulai dengan "GVAS".
-*   **Dukungan Engine Tambahan**: Menambahkan parser untuk engine seperti Godot (format `.tres`/`.res` atau konfigurasi khusus) atau engine lama seperti RPG Maker VX Ace (yang saat ini masih sulit diedit di browser karena format Ruby Marshal).
+### Unreal Engine (GVAS):
+Mendukung format `.sav`. Menggunakan pustaka `uesavetool` untuk konversi GVAS ke JSON. Menangani berbagai jenis kompresi (zlib, gzip).
 
-### Optimasi Performa:
-*   **Web Workers**: Untuk file yang sangat besar (seperti save file Palworld yang bisa mencapai puluhan MB), pemrosesan di main thread dapat membuat browser membeku. Memindahkan logika parsing ke Web Worker akan menjaga UI tetap responsif.
-*   **Virtual Scrolling**: Gunakan virtual scrolling pada editor JSON jika struktur data sangat dalam atau besar agar rendering lebih cepat.
+## 4. Peningkatan Masa Depan
 
-### Kualitas Kode (Refactoring):
-*   **Abstraksi Parser**: Saat ini `SaveEditor.tsx` memiliki blok `if-else` yang besar untuk mendeteksi file. Ini bisa direfaktorisasi menggunakan pola *Strategy* atau *Registry* agar lebih modular.
-*   **Validasi Skema**: Gunakan pustaka validasi seperti `Zod` untuk memastikan data yang diedit tetap sesuai dengan skema yang diharapkan oleh game, guna meminimalkan risiko file korup.
+*   **Peningkatan WebAssembly**: Menggunakan modul WASM untuk dekompresi file yang lebih cepat.
+*   **Cloud Sync (Opsional)**: Integrasi dengan Google Drive/Dropbox untuk menyimpan file cadangan secara otomatis (dengan izin pengguna).
+*   **Dukungan Plugin**: Memungkinkan komunitas menambahkan parser mereka sendiri melalui file konfigurasi JSON sederhana.
 
-### Fitur Baru:
-*   **Backup Otomatis**: Secara otomatis mengunduh salinan asli file sebelum edisi pertama diterapkan.
-*   **Batch Editing**: Kemampuan untuk mengubah banyak nilai sekaligus (misalnya "Set semua stats ke 99").
-
-## 4. Kesimpulan
-Proyek ini memiliki fondasi yang kuat untuk menjadi alat editor save file yang universal. Fokus utama selanjutnya adalah meningkatkan cakupan deteksi otomatis dan memastikan stabilitas saat menangani file berukuran besar.
+## 5. Kesimpulan
+Dengan implementasi Registry, Web Workers, dan Heuristik biner, Save Editor Online kini lebih tangguh, cepat, dan mudah dikembangkan. Penambahan fitur Backup dan Batch meningkatkan pengalaman pengguna secara signifikan.
