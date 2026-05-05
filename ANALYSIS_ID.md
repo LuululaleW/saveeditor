@@ -19,12 +19,29 @@ Dokumen ini menjelaskan semua perubahan yang telah dilakukan untuk memenuhi kebu
 *   **Web Workers Offline:** Fitur pengeditan file besar tetap berjalan lancar secara offline menggunakan teknologi Web Workers yang sekarang dikonfigurasi untuk kompatibilitas maksimal.
 
 ### 🤖 Perubahan Sistem (GitHub Actions)
-*   **Penghapusan Deployment Workflow:** File `.github/workflows/deploy.yml` telah dihapus.
-*   **Dampak:**
-    *   **Keamanan:** Kegagalan "apiToken" yang Anda alami sebelumnya tidak akan terjadi lagi karena sistem tidak lagi mencoba mengirim data ke Cloudflare secara otomatis.
-    *   **Kontrol:** Anda sekarang memiliki kontrol penuh untuk membangun (*build*) aplikasi secara lokal dan menggunakannya di perangkat pilihan Anda tanpa tergantung pada layanan cloud otomatis.
+*   **Pembaruan Workflow:** File `.github/workflows/deploy.yml` (Cloudflare) telah digantikan oleh `.github/workflows/android-build.yml`.
+*   **Keuntungan:**
+    *   **Keamanan:** Kegagalan "apiToken" yang Anda alami sebelumnya (seperti di gambar) tidak akan terjadi lagi karena sistem tidak lagi memerlukan token rahasia untuk build dasar.
+    *   **Otomatisasi:** Setiap kali Anda melakukan *push* kode, GitHub akan otomatis membangun APK Android, App Bundle (AAB), dan versi Web secara bersamaan.
 
-## 2. Cara Menggunakan Secara Offline
+## 2. Cara Mendapatkan Hasil Build dari GitHub
+Setelah Anda melakukan *push* atau melakukan perubahan di repositori ini, Anda bisa mengunduh hasilnya:
+1.  Buka tab **Actions** di repositori GitHub Anda.
+2.  Klik pada alur kerja terbaru bernama **"Build Android APK"**.
+3.  Scroll ke bawah ke bagian **Artifacts**.
+4.  Di sana Anda akan menemukan:
+    *   `save-editor-debug-apk`: File APK untuk diinstal langsung di HP Android.
+    *   `save-editor-web-dist`: File web yang siap diunggah ke hosting mana pun atau dibuka lokal.
+    *   `save-editor-release-bundle`: File AAB untuk keperluan rilis resmi.
+
+## 4. (Opsional) Mengaktifkan Kembali Deployment Cloudflare
+Jika Anda tetap ingin menggunakan deployment otomatis ke Cloudflare Pages seperti sebelumnya, Anda harus:
+1.  Menambahkan kembali `deploy.yml` (saya bisa melakukannya jika diminta).
+2.  Menambahkan **Secret** di GitHub (Settings > Secrets and variables > Actions):
+    *   `CLOUDFLARE_API_TOKEN`: Token API Cloudflare Anda.
+    *   `CLOUDFLARE_ACCOUNT_ID`: ID Akun Cloudflare Anda.
+
+## 5. Cara Menggunakan Secara Offline
 
 ### Di Komputer (PWA)
 1.  Jalankan aplikasi (melalui server lokal atau akses file `dist/index.html`).
@@ -35,12 +52,12 @@ Dokumen ini menjelaskan semua perubahan yang telah dilakukan untuk memenuhi kebu
 1.  Aset di folder `dist/` sudah siap dibungkus menjadi APK.
 2.  Karena menggunakan path relatif, aplikasi tidak akan mengalami "layar putih" saat dibuka tanpa server web.
 
-## 3. Analisis Teknis File yang Dimodifikasi
+## 6. Analisis Teknis File yang Dimodifikasi
 
 1.  **`astro.config.mjs`:** Diperbarui untuk mendukung hanya 2 bahasa, menambahkan integrasi PWA, dan memastikan Web Worker dikompilasi dalam format ES agar kompatibel dengan browser modern secara offline.
 2.  **`src/layouts/BaseLayout.astro`:** Dibersihkan dari semua kode pelacakan pihak ketiga dan disederhanakan untuk performa maksimal.
 3.  **`src/i18n/ui.ts`:** Registry bahasa dipangkas menjadi hanya EN dan ID untuk efisiensi memori.
 4.  **`src/components/Header.astro`:** Menu navigasi dan pemilih bahasa diperbarui agar lebih sederhana dan hanya menampilkan opsi yang tersedia.
 
-## 4. Kesimpulan
+## 7. Kesimpulan
 Aplikasi sekarang telah bertransformasi dari platform web publik yang didukung iklan menjadi **alat utilitas pribadi yang ringan, privat, dan tangguh secara offline**. Semua fitur utama (Save Editor, Godot Parser, Batch Editor) tetap berfungsi 100% tanpa ada ketergantungan pada server luar.
