@@ -10,6 +10,7 @@ import { rehypeLazyLoadImages } from './src/plugins/rehype-lazy-image.mjs';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://saveeditor.top',
+  base: './',
   trailingSlash: 'always',
   vite: {
     plugins: [tailwindcss()]
